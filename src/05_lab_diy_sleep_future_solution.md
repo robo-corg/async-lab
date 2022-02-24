@@ -2,7 +2,7 @@
 
 There are probably many ways to go about implementing sleep. Here is a simple one that spawns a thread to handle the sleeping.
 
-```rust
+```rust,ignore
 {{#include ../code/labs/sleep-future/src/main.rs}}
 ```
 

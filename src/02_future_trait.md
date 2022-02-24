@@ -22,7 +22,7 @@ Beyond generating Futures for you when you use the async keyword most of the fut
 2. If Poll::Ready is returned we are done horray
 3. If Poll::Pending we go off and do other work until the context's waker is called.
 
-```rust
+```rust,ignore
 loop {
     let result = future.poll(context);
 
