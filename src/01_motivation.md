@@ -8,7 +8,7 @@ Normally we would write this as:
 
 ```rust
 fn perform(input: String) -> String {
-    format!("Performed {}", self.input.as_str())
+    format!("Performed {}", input.as_str())
 }
 ```
 
@@ -24,10 +24,10 @@ A really simple way to this might be to simply spawn the work in a thread:
 
 ```rust
 fn perform_callback<F>(input: String, callback: F)
-    where F: FnOnce(String)
+    where F: FnOnce(String) + Send + 'static
 {
     std::thread::spawn(move || {
-        callback(format!("Performed {}", self.input.as_str()))
+        callback(format!("Performed {}", input.as_str()))
     });
 }
 ```
@@ -36,10 +36,10 @@ Or with rayon's threadpools:
 
 ```rust,ignore
 fn perform_callback<F>(input: String, callback: F)
-    where F: FnOnce(String)
+    where F: FnOnce(String) + Send + 'static
 {
     rayon::spawn(move || {
-        callback(format!("Performed {}", self.input.as_str()))
+        callback(format!("Performed {}", input.as_str()))
     });
 }
 ```
@@ -58,9 +58,9 @@ or file IO, most operating systems already have apis to help alleviate this prob
 This is where apis like select and epoll are useful:
 
 ```rust,edition2018
-{{#include ../01_async-motivation/src/lib.rs:poll_defs}}
+{{#include ../code/examples/01_async-motivation/src/lib.rs:poll_defs}}
 
-{{#include ../01_async-motivation/src/lib.rs:poll_example}}
+{{#include ../code/examples/01_async-motivation/src/lib.rs:poll_example}}
 ```
 
 ## Further reading
