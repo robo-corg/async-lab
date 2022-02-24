@@ -1,0 +1,325 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Why async is hard - Async Lab</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="01_motivation.html"><strong aria-hidden="true">1.</strong> Motivating Examples</a></li><li class="chapter-item expanded "><a href="02_future_trait.html"><strong aria-hidden="true">2.</strong> Future Trait</a></li><li class="chapter-item expanded "><a href="03_why_async_is_hard.html" class="active"><strong aria-hidden="true">3.</strong> Why async is hard</a></li><li class="chapter-item expanded "><a href="04_lab_diy_sleep_future.html"><strong aria-hidden="true">4.</strong> 🔎 Lab: DIY Sleep Future</a></li><li class="chapter-item expanded "><a href="05_lab_diy_sleep_future_solution.html"><strong aria-hidden="true">5.</strong> ✅ Lab Solution: DIY Sleep Future</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Async Lab</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="why-async-is-hard"><a class="header" href="#why-async-is-hard">Why async is hard</a></h1>
+<p>Sometimes rust async programming can be a breeze but other times it is quite difficult and requires knowing about many of the deeper more complicated parts of rust such nonelided lifetimes and Pin etc...</p>
+<h2 id="pin"><a class="header" href="#pin">Pin</a></h2>
+<p>Pin allows rust say that something will not be moved or dropped without having to pass a container such as <code>Box</code> or a <code>&amp;mut</code>. This means pointers to pinned data will be valid as long as the Pinned struct
+lives.</p>
+<p>This can be useful for self referential data such as Futures whose state machines may contain references to data already owned by the future itself. With Pin's added invariant
+its possible for the compiler to generate futures that are more efficient and compact in memory. https://boats.gitlab.io/blog/post/2018-01-25-async-i-self-referential-structs/</p>
+<p>TODO: Take some compiler generated futures and and show case their use of this?</p>
+<h2 id="async-closures"><a class="header" href="#async-closures">Async closures</a></h2>
+<p>Unlike the <code>async fn ()</code> syntax <code>async ||</code> is not support in rust stable rust yet (see <a href="https://github.com/rust-lang/rust/issues/62290">tracking issue issue 62290</a>), so to work around this we use closures that happen to produce futures <code>FnOnce() -&gt; Future</code> or <code>|| async { }</code>.</p>
+<h3 id="fnonce"><a class="header" href="#fnonce">FnOnce</a></h3>
+<p>This works reasonably well assuming the closure is <code>FnOnce</code> since even if we need to move something into our <code>async {}</code>.</p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::future::Future;
+
+async fn run_it&lt;F, Fut&gt;(f: F)
+    where F: FnOnce() -&gt; Fut, Fut: Future&lt;Output=()&gt;
+{
+    f().await
+}
+
+<span class="boring">async {
+</span>let mut output = None;
+
+run_it(|| async {
+    output = Some(42);
+}).await;
+<span class="boring">};
+</span><span class="boring">}
+</span></code></pre></pre>
+<h3 id="fnmut"><a class="header" href="#fnmut">FnMut</a></h3>
+<p>However it does mean that we have two closures to deal with in actuality. The normal one <code>|...|</code> and closure implicity created with <code>async</code>.</p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::future::Future;
+
+async fn run_it&lt;F, Fut&gt;(mut f: F)
+    where F: FnMut() -&gt; Fut, Fut: Future&lt;Output=()&gt;
+{
+    f().await;
+    f().await
+}
+
+<span class="boring">async {
+</span>
+
+// The following now longer compiles
+// let output = None;
+// run_it(|| async {
+//     output = Some(42);
+// }).await;
+
+<span class="boring">};
+</span><span class="boring">}
+</span></code></pre></pre>
+<p>An easy fix like <code>.clone()</code> is to toss output into a mutex. This make it so output only needs to be a <code>&amp;Mutex&lt;Option&lt;i32&gt;&gt;</code> in the closure.</p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::future::Future;
+
+async fn run_it&lt;F, Fut&gt;(mut f: F)
+    where F: FnMut() -&gt; Fut, Fut: Future&lt;Output=()&gt;
+{
+    f().await;
+    f().await
+}
+
+
+<span class="boring">async {
+</span>
+let output: Option&lt;i32&gt; = None;
+
+let output_mutex = std::sync::Mutex::new(output);
+
+run_it(||
+    async {
+        let mut locked_output = output_mutex.lock().unwrap();
+        *locked_output = Some(42);
+    }).await;
+
+<span class="boring">};
+</span><span class="boring">}
+</span></code></pre></pre>
+<p>Locking can verbose and have performance gotchas adds extra complexity (when using locks its a good idea to think about if your code can deadlock).</p>
+<p>With pin and some torturous lifetime generics and some changes to the interface we can convince the compiler that the <code>&amp;mut Option&lt;i32&gt;</code> will only live as long as future the closure
+returns and allow said lifetime to vary in each closure invocation.</p>
+<pre><pre class="playground"><code class="language-rust edition2018">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::future::Future;
+use std::pin::Pin;
+
+// Taking output as a pinned data makes it easier to get the lifetimes for output right.
+// The pin lets us repeatidly give out non-overlapping &amp;mut Option&lt;i32&gt;'s which we need
+// since f is called twice
+async fn run_it&lt;F&gt;(mut output: Pin&lt;&amp;mut Option&lt;i32&gt;&gt;, mut f: F)
+    // This is some tricker higher kinded lifetime magic. We want to say our closure for any lifetime 'a
+    // can take a pinned `&amp;'a mut Option&lt;i32&gt;` and return a future that lives as long as that output
+    // By using this quantifier it lets us plug in different lifetimes for 'a instead of it being fixed
+    // This matters since we need the lifetimes of 'a to not overlap with each other
+    //
+    // Note that the return type is now `Pin&lt;Box&lt;dyn Future&lt;Output=()&gt; + 'a&gt;&gt;` this is a work around
+    // so we can tell rust the future is Future&lt;Output=()&gt; + 'a also (the for syntax only applies to a single where clause)
+    where for &lt;'a&gt; F: FnMut(Pin&lt;&amp;'a mut Option&lt;i32&gt;&gt;) -&gt; Pin&lt;Box&lt;dyn Future&lt;Output=()&gt; + 'a&gt;&gt;
+{
+    // lifetime for 'a will end once we await and then drop the future being output
+    f(output.as_mut()).await;
+    // This lets us grab another &amp;mut ref for output with another different lifetime for 'a
+    f(output.as_mut()).await
+}
+
+
+<span class="boring">async {
+</span>
+let mut output = Box::pin(None);
+
+run_it(output.as_mut(), |mut output|
+    Box::pin(async {
+        *output.get_mut() = Some(42);
+    })).await;
+
+<span class="boring">};
+</span><span class="boring">}
+</span></code></pre></pre>
+<p>In general it pays to think carefully when introducing state to futures if you need to repeatedly call future generating closure. Since neither of the solutions are particularly clean.</p>
+<p>TODO: Would <code>DerefMut&lt;Target=Option&lt;i32&gt;&gt;</code> work here also? Do we really need Pin?</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="02_future_trait.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="04_lab_diy_sleep_future.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="02_future_trait.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="04_lab_diy_sleep_future.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </body>
+</html>
