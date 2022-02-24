@@ -1,2 +1,2 @@
 [workspace]
-members = ["code/examples/-1_async-motivation", "code/labs/basic-mio-async"]
+members = ["code/examples/01_async-motivation", "code/labs/basic-mio-async", "code/labs/sleep-future"]

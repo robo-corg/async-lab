@@ -1,84 +1,22 @@
 # Why async is hard
 
-## ~~Why async is hard~~ Why closures are hard
+Sometimes rust async programming can be a breeze but other times it is quite difficult and requires knowing about many of the deeper more complicated parts of rust such nonelided lifetimes and Pin etc...
 
-There are lot of reasons why async can be troublesome to deal with especially as new rust programmer.
+## Pin
 
-A significant part of this has to do with the fact that when we are using async we are really building up complicated closures for work that will eventually performed.
+Pin allows rust say that something will not be moved or dropped without having to pass a container such as `Box` or a `&mut`. This means pointers to pinned data will be valid as long as the Pinned struct
+lives.
 
-Imagine a system where we have a bunch of `FnMut()` closures to model work we plan on doing.
+This can be useful for self referential data such as Futures whose state machines may contain references to data already owned by the future itself. With Pin's added invariant
+its possible for the compiler to generate futures that are more efficient and compact in memory. https://boats.gitlab.io/blog/post/2018-01-25-async-i-self-referential-structs/
 
-```rust
-enum RunResult {
-    Break,
-    Continue
-}
+TODO: Take some compiler generated futures and and show case their use of this?
 
-type Promise = Box<dyn FnMut() -> RunResult>;
-
-fn execute_until_done<F>(mut f: F)
-    where F: FnMut() -> RunResult
-{
-    while let RunResult::Continue = f() {
-
-    }
-}
-
-let mut sum = 0;
-
-execute_until_done(|| {
-    if sum < 42 {
-        sum += 1;
-        RunResult::Continue
-    }
-    else {
-        RunResult::Break
-    }
-});
-
-println!("Sum: {}", sum);
-```
-
-The above works because rust can make borrow sum until `execute_until_done`
-
-If we use the Promise type we defined above we get an error though since sum does not live long enough:
-
-```rust,ignore
-# enum RunResult {
-#     Break,
-#     Continue
-# }
-#
-# type Promise = Box<dyn FnMut() -> RunResult>;
-#
-# fn execute_until_done<F>(mut f: F)
-#    where F: FnMut() -> RunResult
-# {
-#    while let RunResult::Continue = f() {
-#
-#    }
-# }
-let mut sum = 0;
-
-let promise: Promise = Box::new(|| {
-    if sum < 42 {
-        sum += 1;
-        RunResult::Continue
-    }
-    else {
-        RunResult::Break
-    }
-});
-
-execute_until_done(promise);
-
-println!("Sum: {}", sum);
-
-```
-
-## Async closures don't exist (sort of)
+## Async closures
 
 Unlike the `async fn ()` syntax `async ||` is not support in rust stable rust yet (see [tracking issue issue 62290](https://github.com/rust-lang/rust/issues/62290)), so to work around this we use closures that happen to produce futures `FnOnce() -> Future` or `|| async { }`.
+
+### FnOnce
 
 This works reasonably well assuming the closure is `FnOnce` since even if we need to move something into our `async {}`.
 
@@ -100,9 +38,9 @@ run_it(|| async {
 # };
 ```
 
-However it does mean that we have two closures to deal with in actuality. The normal one `|...|` and closure implicity created with `async`.
+### FnMut
 
-## Fn and FnMut + Futures
+However it does mean that we have two closures to deal with in actuality. The normal one `|...|` and closure implicity created with `async`.
 
 ```rust
 use std::future::Future;
@@ -127,8 +65,6 @@ async fn run_it<F, Fut>(mut f: F)
 ```
 
 An easy fix like `.clone()` is to toss output into a mutex. This make it so output only needs to be a `&Mutex<Option<i32>>` in the closure.
-
-# Fn and FnMut + Futures
 
 ```rust
 use std::future::Future;
@@ -199,3 +135,5 @@ run_it(output.as_mut(), |mut output|
 ```
 
 In general it pays to think carefully when introducing state to futures if you need to repeatedly call future generating closure. Since neither of the solutions are particularly clean.
+
+TODO: Would `DerefMut<Target=Option<i32>>` work here also? Do we really need Pin?
