@@ -48,6 +48,7 @@ impl Future for SleepFuture {
 }
 
 fn main() {
+    // Run future in a very simple executor that blocks
     block_on(async {
         let start = Instant::now();
         SleepFuture::new(Duration::from_secs(1)).await;
@@ -59,6 +60,8 @@ fn main() {
 
     block_on(async {
         let start = Instant::now();
+
+        // Run two SleepFutures concurrently
         join!(
             SleepFuture::new(Duration::from_secs(1)),
             SleepFuture::new(Duration::from_millis(250))
